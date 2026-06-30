@@ -22,7 +22,6 @@ Important: public GitHub repositories can always be cloned or downloaded. For th
 | [Static Site 4](projects/static-site-4/PORTFOLIO_DESCRIPTION.md) | HTML, CSS, JavaScript | Small static web archive demo. |
 | [Static Site 9](projects/static-site-9/PORTFOLIO_DESCRIPTION.md) | HTML, CSS, JavaScript | Compact static web archive demo. |
 | [Static Site Pre:pri](projects/static-site-prepri/PORTFOLIO_DESCRIPTION.md) | HTML, CSS, JavaScript | Small static landing/static-page project. |
-| [Informatics Static Site](projects/informatics-static-site/PORTFOLIO_DESCRIPTION.md) | HTML | Lightweight educational static site snapshot. |
 | [Video Editing Course Site](projects/video-editing-course-site/PORTFOLIO_DESCRIPTION.md) | HTML, CSS, JavaScript | Older static educational/course website about video editing. |
 | [iOS Project 123](projects/ios-project-123/PORTFOLIO_DESCRIPTION.md) | Swift, Xcode | Small Swift/Xcode archive project with app, watch app, unit test, and UI test targets. |
 | [iOS Project 1234](projects/ios-project-1234/PORTFOLIO_DESCRIPTION.md) | Swift, Xcode | Small Swift/Xcode archive project with app, unit test, and UI test targets. |

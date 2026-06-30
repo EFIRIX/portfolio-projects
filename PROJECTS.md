@@ -104,7 +104,6 @@
 - `projects/static-site-4`
 - `projects/static-site-9`
 - `projects/static-site-prepri`
-- `projects/informatics-static-site`
 - `projects/video-editing-course-site`
 - `projects/ios-project-123`
 - `projects/ios-project-1234`
@@ -116,7 +115,6 @@ Each archive project also has its own portfolio description:
 - `projects/static-site-4/PORTFOLIO_DESCRIPTION.md`
 - `projects/static-site-9/PORTFOLIO_DESCRIPTION.md`
 - `projects/static-site-prepri/PORTFOLIO_DESCRIPTION.md`
-- `projects/informatics-static-site/PORTFOLIO_DESCRIPTION.md`
 - `projects/video-editing-course-site/PORTFOLIO_DESCRIPTION.md`
 - `projects/ios-project-123/PORTFOLIO_DESCRIPTION.md`
 - `projects/ios-project-1234/PORTFOLIO_DESCRIPTION.md`
