@@ -18,6 +18,7 @@ Important: public GitHub repositories can always be cloned or downloaded. For th
 | [n8n AI Automation Factory](projects/n8n-ai-automation-factory/PORTFOLIO_DESCRIPTION.md) | n8n, Telegram, AI workflows | Collection of sanitized n8n workflows: a 133-node Telegram AI content factory, auto-debug loop, HTTP prototype, and recruiter automation. |
 | [Dating Photo Analyzer](projects/dating-photo-analyzer/PORTFOLIO_DESCRIPTION.md) | React, Vite | Lightweight browser UI demo for analyzing dating profile photos. |
 | [EGE Materials Generator](projects/ege-materials-generator/PORTFOLIO_DESCRIPTION.md) | Python | Educational tooling for generating exam-preparation materials from source content. |
+| [Second Brain Knowledge System](projects/second-brain-knowledge-system/PORTFOLIO_DESCRIPTION.md) | Obsidian, Markdown, Knowledge management | Visual case study of a personal knowledge system with blurred screenshots and no private note contents. |
 | [Static Site 4](projects/static-site-4/PORTFOLIO_DESCRIPTION.md) | HTML, CSS, JavaScript | Small static web archive demo. |
 | [Static Site 9](projects/static-site-9/PORTFOLIO_DESCRIPTION.md) | HTML, CSS, JavaScript | Compact static web archive demo. |
 | [Static Site Pre:pri](projects/static-site-prepri/PORTFOLIO_DESCRIPTION.md) | HTML, CSS, JavaScript | Small static landing/static-page project. |

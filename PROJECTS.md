@@ -73,6 +73,15 @@
 - Portfolio value: shows low-code/no-code automation engineering at different scales, from small workflow prototypes to a full AI content pipeline with moderation and fallback logic.
 - Removed for publication: credentials, webhook IDs, pin/static runtime data, token-like strings, personal IDs.
 
+### Second Brain Knowledge System
+
+- Path: `projects/second-brain-knowledge-system`
+- Stack: Obsidian, Markdown, knowledge management
+- Description: visual case study of a personal second-brain knowledge system with file structure and graph view screenshots.
+- Details: `projects/second-brain-knowledge-system/PORTFOLIO_DESCRIPTION.md`
+- Portfolio value: shows information architecture, personal productivity tooling, and structured knowledge-base design.
+- Removed for publication: private notes, personal content, raw vault files, unredacted screenshots.
+
 ### Dating Photo Analyzer
 
 - Path: `projects/dating-photo-analyzer`

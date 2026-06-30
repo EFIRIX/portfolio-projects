@@ -4,6 +4,8 @@
 
 ![n8n AI factory screenshot](assets/n8n-ai-factory.jpeg)
 
+![n8n marketplace recruiter screenshot](assets/n8n-marketplace-recruiter.jpg)
+
 ## Workflows
 
 | Workflow | Nodes | Connections | Main Node Types | Description |

@@ -2,6 +2,10 @@
 
 Local Telegram automation bot with remote owner controls and a local web admin panel.
 
+![Telegram bot redacted message preview](assets/telegram-bot-message-redacted.jpg)
+
+![Telegram bot project structure](assets/telegram-bot-project-structure.jpg)
+
 ## What works in v1
 
 - Remote owner commands in Telegram: `/status`, `/logs`, `/chats`, `/settings`, `/media`, `/help_admin`, `/enable_feature`, `/disable_feature`.

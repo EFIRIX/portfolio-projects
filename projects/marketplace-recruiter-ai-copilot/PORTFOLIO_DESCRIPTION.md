@@ -12,3 +12,4 @@ Marketplace Recruiter AI Copilot is an n8n workflow and automation case for recr
 
 Local data files and runtime state were removed. The public version keeps the workflow JSON, README, and case notes.
 
+Visual preview: `assets/marketplace-recruiter-workflow.jpg`

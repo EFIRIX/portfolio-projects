@@ -2,6 +2,8 @@
 
 n8n-автоматизация для первичного скоринга кандидатов на вакансии компаний, которые продают на Wildberries и Ozon. Проект сделан как портфолио-кейс под AI/recruitment-задачи: webhook принимает вакансию и резюме, mock AI node оценивает релевантность, формирует summary для рекрутера, сообщение кандидату, вопросы для интервью и лог стоимости токенов.
 
+![Marketplace Recruiter workflow](assets/marketplace-recruiter-workflow.jpg)
+
 ## Что внутри
 
 - `workflow/marketplace-recruiter-ai-copilot.json` - workflow для импорта в n8n.

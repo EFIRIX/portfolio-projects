@@ -12,3 +12,4 @@ Telegram Automation Bot is a Python automation project with a GUI flow, secure s
 
 The public version excludes `.env`, virtual environments, logs, executable builds, and local runtime data. Test token fixtures were replaced with safe placeholder values.
 
+Visual previews: `assets/telegram-bot-message-redacted.jpg`, `assets/telegram-bot-project-structure.jpg`

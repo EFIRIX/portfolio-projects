@@ -12,3 +12,4 @@ Online School Intella is a full-stack educational platform for history exam prep
 
 This portfolio version excludes local environment files, generated documents, private runtime state, dependency folders, and Git history from the original working copy.
 
+Visual preview: `assets/intella-presentation-redacted.jpg`

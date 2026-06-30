@@ -1,5 +1,7 @@
 # Интелла — система подготовки к ОГЭ по истории
 
+![Интелла presentation preview](assets/intella-presentation-redacted.jpg)
+
 Платформа на **Next.js + FastAPI + PostgreSQL** с акцентом на персональный маршрут и контур **устного допуска**.
 
 ## Что добавлено в Oral Admission Upgrade v1
