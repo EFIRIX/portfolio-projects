@@ -11,6 +11,8 @@ serviceAccount.json
 node_modules/
 .next/
 dist/
+!projects/dating-photo-analyzer/dist/
+!projects/dating-photo-analyzer/dist/**
 build/
 .venv/
 venv/
