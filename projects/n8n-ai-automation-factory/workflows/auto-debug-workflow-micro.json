@@ -1,0 +1,492 @@
+{
+  "name": "Auto-Debug Workflow (GET DEBUG FIX PATCH) - Micro Improved",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -2200,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "const workflowId = String($json.workflowId || $env.TARGET_WORKFLOW_ID || '').trim(); if (!workflowId) { return [{ json: { ...$json, workflowId: '', configError: 'missing_workflow_id' } }]; } return [{ json: { ...$json, workflowId } }];"
+      },
+      "name": "Function (Resolve Target Workflow)",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        -1980,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ (() => { const base = String($env.N8N_BASE_URL || 'http://localhost:5678'); const normalized = base.endsWith('/') ? base.slice(0, -1) : base; return normalized + '/api/v1/workflows/' + encodeURIComponent(String($json.workflowId || '')); })() }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-N8N-API-KEY",
+              "value": "={{ $env.N8N_API_KEY || '' }}"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          },
+          "timeout": 45000
+        }
+      },
+      "name": "HTTP Request (GET Workflow)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -1760,
+        240
+      ],
+      "continueOnFail": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "functionCode": "const originalWorkflow = $items('HTTP Request (GET Workflow)', 0, 0)[0]?.json || $json; const defaultDebugPrompt = 'You are an n8n workflow debugger. Analyze workflow JSON, detect errors and weak spots, propose improvements, and return strict JSON with keys issues, improvements, fixedWorkflow.'; const debugPrompt = String($env.DEBUG_PROMPT || defaultDebugPrompt); const aiUrl = String($env.AI_URL || 'https://api.openai.com/v1/chat/completions').trim(); const debugModel = String($env.DEBUG_MODEL || 'gpt-4o-mini').trim(); const debugRequest = { model: debugModel, temperature: 0.1, response_format: { type: 'json_object' }, messages: [ { role: 'system', content: debugPrompt }, { role: 'user', content: JSON.stringify({ workflow_json: originalWorkflow }) } ] }; return [{ json: { ...$json, originalWorkflow, aiUrl, debugRequest } }];"
+      },
+      "name": "Function (Build DEBUG Request)",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        -1540,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $json.aiUrl }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ $env.AI_API_KEY ? ('Bearer ' + $env.AI_API_KEY) : '' }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.debugRequest }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          },
+          "timeout": 45000
+        }
+      },
+      "name": "HTTP Request (DEBUG AI)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -1320,
+        240
+      ],
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 1200,
+      "continueOnFail": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "functionCode": "const originalWorkflow = $items('HTTP Request (GET Workflow)', 0, 0)[0]?.json || null; const response = $json; let content = ''; if (typeof response === 'string') { content = response; } else if (response && typeof response.output_text === 'string') { content = response.output_text; } else if (response && response.choices && response.choices[0] && response.choices[0].message && typeof response.choices[0].message.content === 'string') { content = response.choices[0].message.content; } else if (response && response.message && typeof response.message.content === 'string') { content = response.message.content; } else { content = JSON.stringify(response || {}); } let parsed = null; let debugParseOk = false; let reason = ''; try { parsed = JSON.parse(content); debugParseOk = !!parsed && typeof parsed === 'object'; } catch (e) { reason = 'debug_parse_error'; } const issues = Array.isArray(parsed?.issues) ? parsed.issues : []; const improvements = Array.isArray(parsed?.improvements) ? parsed.improvements : []; const fixedWorkflow = parsed && typeof parsed === 'object' ? (parsed.fixedWorkflow || null) : null; return [{ json: { ...$json, originalWorkflow, debugRaw: response, debugParseOk, issues, improvements, issuesCount: issues.length, improvementsCount: improvements.length, debugReason: reason, debugFixedWorkflow: fixedWorkflow } }];"
+      },
+      "name": "Function (Parse DEBUG JSON)",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        -1100,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "94bc0281-a057-4f30-b75f-688eb70b6b89",
+              "leftValue": "={{ $json.debugParseOk === true && $json.debugFixedWorkflow && typeof $json.debugFixedWorkflow === 'object' }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "name": "IF (DEBUG Output Valid)",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -880,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "const sourceWorkflow = $json.debugFixedWorkflow && typeof $json.debugFixedWorkflow === 'object' ? $json.debugFixedWorkflow : ($json.originalWorkflow || null); const defaultFixPrompt = 'You are a senior n8n workflow fixer. Return ONLY valid n8n workflow JSON and keep compatibility. Preserve nodes, ids, connections, settings, credentials, positions, type and typeVersion unless change is strictly required.'; const fixPrompt = String($env.FIX_PROMPT || defaultFixPrompt); const instruction = JSON.stringify({ issues: $json.issues || [], improvements: $json.improvements || [] }); const fixModel = String($env.FIX_MODEL || 'gpt-4o-mini').trim(); const aiUrl = String($env.AI_URL || 'https://api.openai.com/v1/chat/completions').trim(); const fixRequest = { model: fixModel, temperature: 0.05, response_format: { type: 'json_object' }, messages: [ { role: 'system', content: fixPrompt }, { role: 'user', content: JSON.stringify({ instruction, workflow_json: sourceWorkflow }) } ] }; return [{ json: { ...$json, aiUrl, fixRequest, fixedWorkflowInput: sourceWorkflow } }];"
+      },
+      "name": "Function (Build FIX Request)",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        -660,
+        120
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $json.aiUrl }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ $env.AI_API_KEY ? ('Bearer ' + $env.AI_API_KEY) : '' }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.fixRequest }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          },
+          "timeout": 45000
+        }
+      },
+      "name": "HTTP Request (FIX AI)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -440,
+        120
+      ],
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 1200,
+      "continueOnFail": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "functionCode": "const originalWorkflow = $items('HTTP Request (GET Workflow)', 0, 0)[0]?.json || null; let debugData = {}; try { debugData = $items('Function (Parse DEBUG JSON)', 0, 0)[0]?.json || {}; } catch (e) { debugData = {}; } const response = $json; let content = ''; if (typeof response === 'string') { content = response; } else if (response && typeof response.output_text === 'string') { content = response.output_text; } else if (response && response.choices && response.choices[0] && response.choices[0].message && typeof response.choices[0].message.content === 'string') { content = response.choices[0].message.content; } else if (response && response.message && typeof response.message.content === 'string') { content = response.message.content; } else { content = JSON.stringify(response || {}); } let parsed = null; let reason = ''; try { parsed = JSON.parse(content); } catch (e) { reason = 'fix_parse_error'; } let fixedWorkflow = null; if (parsed && typeof parsed === 'object') { fixedWorkflow = parsed.fixedWorkflow && typeof parsed.fixedWorkflow === 'object' ? parsed.fixedWorkflow : parsed; } let patchSafe = true; const validationErrors = []; if (!fixedWorkflow || typeof fixedWorkflow !== 'object') { patchSafe = false; validationErrors.push('fixed_workflow_missing'); } if (!fixedWorkflow || typeof fixedWorkflow.name !== 'string' || !fixedWorkflow.name.trim()) { patchSafe = false; validationErrors.push('fixed_workflow_name_missing'); } if (!fixedWorkflow || !Array.isArray(fixedWorkflow.nodes)) { patchSafe = false; validationErrors.push('fixed_workflow_nodes_invalid'); } if (!fixedWorkflow || typeof fixedWorkflow.connections !== 'object' || fixedWorkflow.connections === null) { patchSafe = false; validationErrors.push('fixed_workflow_connections_missing'); } const originalNodes = Array.isArray(originalWorkflow?.nodes) ? originalWorkflow.nodes : []; const fixedNodes = Array.isArray(fixedWorkflow?.nodes) ? fixedWorkflow.nodes : []; const originalIds = new Set(originalNodes.map((n) => String(n && n.id !== undefined ? n.id : '')).filter(Boolean)); const fixedIds = new Set(fixedNodes.map((n) => String(n && n.id !== undefined ? n.id : '')).filter(Boolean)); const missingIds = []; for (const id of originalIds) { if (!fixedIds.has(id)) missingIds.push(id); } if (missingIds.length > 0) { patchSafe = false; validationErrors.push('missing_original_node_ids'); } if (patchSafe && originalWorkflow && fixedWorkflow) { const originalSerialized = JSON.stringify(originalWorkflow); const fixedSerialized = JSON.stringify(fixedWorkflow); if (originalSerialized === fixedSerialized) { patchSafe = false; validationErrors.push('no_changes_detected'); reason = 'no_changes_detected'; } } if (!reason && validationErrors.length > 0) reason = validationErrors[0]; let patchPayload = null; if (patchSafe) { patchPayload = { name: fixedWorkflow.name, nodes: fixedWorkflow.nodes, connections: fixedWorkflow.connections, settings: fixedWorkflow.settings && typeof fixedWorkflow.settings === 'object' ? fixedWorkflow.settings : (originalWorkflow && originalWorkflow.settings ? originalWorkflow.settings : {}), staticData: Object.prototype.hasOwnProperty.call(fixedWorkflow, 'staticData') ? fixedWorkflow.staticData : (Object.prototype.hasOwnProperty.call(originalWorkflow || {}, 'staticData') ? originalWorkflow.staticData : null), tags: Array.isArray(fixedWorkflow.tags) ? fixedWorkflow.tags : (Array.isArray(originalWorkflow?.tags) ? originalWorkflow.tags : []) }; } const issuesCount = Number(debugData.issuesCount || (Array.isArray(debugData.issues) ? debugData.issues.length : 0) || 0); const improvementsCount = Number(debugData.improvementsCount || (Array.isArray(debugData.improvements) ? debugData.improvements.length : 0) || 0); return [{ json: { ...debugData, ...$json, originalWorkflow, fixedWorkflow, patchSafe, reason, validationErrors, missingNodeIds: missingIds, issuesCount, improvementsCount, patchPayload } }];"
+      },
+      "name": "Function (Parse FIX JSON + Guardrails)",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        -220,
+        120
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "720f9a7b-f8b3-4b7c-b279-78d11c2f0b6a",
+              "leftValue": "={{ $json.patchSafe === true && !!$json.fixedWorkflow && Object.keys($json.fixedWorkflow).length > 0 && Array.isArray($json.fixedWorkflow.nodes) && $json.fixedWorkflow.nodes.length > 0 && !!$json.patchPayload }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "name": "IF (Patch Safe)",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        0,
+        120
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "const originalWorkflow = $json.originalWorkflow || $items('HTTP Request (GET Workflow)', 0, 0)[0]?.json || null; return [{ json: { ...$json, backup: originalWorkflow } }];"
+      },
+      "name": "Function (Create Backup)",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        220,
+        20
+      ]
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "={{ (() => { const base = String($env.N8N_BASE_URL || 'http://localhost:5678'); const normalized = base.endsWith('/') ? base.slice(0, -1) : base; const workflowId = String(($json.originalWorkflow && $json.originalWorkflow.id) ? $json.originalWorkflow.id : ($json.workflowId || '')); return normalized + '/api/v1/workflows/' + encodeURIComponent(workflowId); })() }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-N8N-API-KEY",
+              "value": "={{ $env.N8N_API_KEY || '' }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.patchPayload }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          },
+          "timeout": 45000
+        }
+      },
+      "name": "HTTP Request (PATCH Workflow)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        440,
+        20
+      ],
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 1200,
+      "continueOnFail": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "functionCode": "let guardrails = {}; try { guardrails = $items('Function (Parse FIX JSON + Guardrails)', 0, 0)[0]?.json || {}; } catch (e) { guardrails = {}; } const issuesCount = Number(guardrails.issuesCount || 0); const improvementsCount = Number(guardrails.improvementsCount || 0); let reason = String($json.reason || guardrails.reason || guardrails.debugReason || '').trim(); const hasHttpError = !!($json.error || (typeof $json.statusCode === 'number' && $json.statusCode >= 400)); const hasPatchResponse = !!($json.id && Array.isArray($json.nodes) && $json.connections && typeof $json.connections === 'object'); let status = 'skipped'; if (hasHttpError) { status = 'error'; if (!reason) reason = 'patch_request_failed'; } else if (guardrails.patchSafe === true && hasPatchResponse) { status = 'patched'; } else if (guardrails.patchSafe === false) { status = 'skipped'; if (!reason) reason = 'patch_not_safe'; } else if (guardrails.debugParseOk === false) { status = 'error'; if (!reason) reason = 'debug_output_invalid'; } else { status = 'skipped'; if (!reason) reason = 'patch_not_applied'; } return [{ json: { ...$json, status, issuesCount, improvementsCount, reason } }];"
+      },
+      "name": "Function (Result)",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        680,
+        140
+      ]
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Function (Resolve Target Workflow)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Function (Resolve Target Workflow)": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request (GET Workflow)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request (GET Workflow)": {
+      "main": [
+        [
+          {
+            "node": "Function (Build DEBUG Request)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Function (Build DEBUG Request)": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request (DEBUG AI)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request (DEBUG AI)": {
+      "main": [
+        [
+          {
+            "node": "Function (Parse DEBUG JSON)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Function (Parse DEBUG JSON)": {
+      "main": [
+        [
+          {
+            "node": "IF (DEBUG Output Valid)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF (DEBUG Output Valid)": {
+      "main": [
+        [
+          {
+            "node": "Function (Build FIX Request)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Function (Result)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Function (Build FIX Request)": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request (FIX AI)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request (FIX AI)": {
+      "main": [
+        [
+          {
+            "node": "Function (Parse FIX JSON + Guardrails)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Function (Parse FIX JSON + Guardrails)": {
+      "main": [
+        [
+          {
+            "node": "IF (Patch Safe)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF (Patch Safe)": {
+      "main": [
+        [
+          {
+            "node": "Function (Create Backup)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Function (Result)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Function (Create Backup)": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request (PATCH Workflow)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request (PATCH Workflow)": {
+      "main": [
+        [
+          {
+            "node": "Function (Result)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": [],
+  "meta": {
+    "portfolioSnapshot": true,
+    "sanitized": true,
+    "notes": "Credentials, workflow IDs, webhook IDs, static data, pin data, and token-like values were removed or replaced."
+  }
+}

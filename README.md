@@ -15,6 +15,7 @@ Important: public GitHub repositories can always be cloned or downloaded. For th
 | [Telegram Automation Bot](projects/telegram-automation-bot/PORTFOLIO_DESCRIPTION.md) | Python, Telethon, FastAPI, pytest | Automation bot with secure setup, storage, GUI flow, web module, packaging templates, and tests. |
 | [Media Converter](projects/media-converter/PORTFOLIO_DESCRIPTION.md) | Python | Desktop utility for media conversion with GUI entry points, install script, packaging metadata, and dependency definitions. |
 | [Marketplace Recruiter AI Copilot](projects/marketplace-recruiter-ai-copilot/PORTFOLIO_DESCRIPTION.md) | n8n workflow | Recruiting automation workflow that structures candidate/job data, estimates AI cost, and prepares recruiter-facing outputs. |
+| [n8n AI Automation Factory](projects/n8n-ai-automation-factory/PORTFOLIO_DESCRIPTION.md) | n8n, Telegram, AI workflows | Collection of sanitized n8n workflows: a 133-node Telegram AI content factory, auto-debug loop, HTTP prototype, and recruiter automation. |
 | [Dating Photo Analyzer](projects/dating-photo-analyzer/PORTFOLIO_DESCRIPTION.md) | React, Vite | Lightweight browser UI demo for analyzing dating profile photos. |
 | [EGE Materials Generator](projects/ege-materials-generator/PORTFOLIO_DESCRIPTION.md) | Python | Educational tooling for generating exam-preparation materials from source content. |
 | [Static Site 4](projects/static-site-4/PORTFOLIO_DESCRIPTION.md) | HTML, CSS, JavaScript | Small static web archive demo. |

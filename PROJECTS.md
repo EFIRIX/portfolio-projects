@@ -64,6 +64,15 @@
 - Portfolio value: automation workflow case for marketplace recruiting.
 - Removed for publication: local workflow data folder.
 
+### n8n AI Automation Factory
+
+- Path: `projects/n8n-ai-automation-factory`
+- Stack: n8n, Telegram, AI workflow automation
+- Description: collection of sanitized n8n workflows, including a 133-node Telegram AI content factory, auto-debug workflow, HTTP request prototype, and recruiter automation workflow.
+- Details: `projects/n8n-ai-automation-factory/PORTFOLIO_DESCRIPTION.md`
+- Portfolio value: shows low-code/no-code automation engineering at different scales, from small workflow prototypes to a full AI content pipeline with moderation and fallback logic.
+- Removed for publication: credentials, webhook IDs, pin/static runtime data, token-like strings, personal IDs.
+
 ### Dating Photo Analyzer
 
 - Path: `projects/dating-photo-analyzer`

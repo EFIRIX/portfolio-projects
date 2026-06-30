@@ -1,0 +1,65 @@
+{
+  "name": "My workflow",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "https://zestless-denese-transcriptionally.ngrok-free.dev/api/v1/workflows/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkZjRmM2YyOC1jZjQ2LTQyM2QtYTdhOS05YjY2NzVmMDdjZTgiLCJpc3MiOiJuOG4iLCJhdWQiOiJwdWJsaWMtYXBpIiwianRpIjoiMWU0MWJjMGQtMThjNi00MDVhLTk0ZmItYmJlNDgzNDcyYzM2IiwiaWF0IjoxNzc1Njc3Nzc1fQ.7yeO-n8weuxhE9E3C40pWp_RbiV4wZzWDnuSa7xJfuA",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-N8N-API-KEY",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkZjRmM2YyOC1jZjQ2LTQyM2QtYTdhOS05YjY2NzVmMDdjZTgiLCJpc3MiOiJuOG4iLCJhdWQiOiJwdWJsaWMtYXBpIiwianRpIjoiMWU0MWJjMGQtMThjNi00MDVhLTk0ZmItYmJlNDgzNDcyYzM2IiwiaWF0IjoxNzc1Njc3Nzc1fQ.7yeO-n8weuxhE9E3C40pWp_RbiV4wZzWDnuSa7xJfuA"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "=return {\n  name: $json[\"data\"][0][\"name\"],\n  nodes: $json[\"data\"][0][\"nodes\"],\n  connections: $json[\"data\"][0][\"connections\"],\n  settings: $json[\"data\"][0][\"settings\"],\n  staticData: $json[\"data\"][0][\"staticData\"] || null,\n  tags: $json[\"data\"][0][\"tags\"] || []\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        208,
+        0
+      ],
+      "name": "HTTP Request"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "tags": [],
+  "meta": {
+    "portfolioSnapshot": true,
+    "sanitized": true,
+    "notes": "Credentials, workflow IDs, webhook IDs, static data, pin data, and token-like values were removed or replaced."
+  }
+}
