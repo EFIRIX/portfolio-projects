@@ -4,19 +4,26 @@ This repository is a sanitized portfolio collection of selected projects.
 
 Important: public GitHub repositories can always be cloned or downloaded. For that reason this repo contains portfolio-safe snapshots only: source code, documentation, configuration examples, and workflow files. Secrets, local `.env` files, generated binaries, trained models, logs, private data, dependency folders, and heavy artifacts were removed before publishing.
 
-## Featured Projects
+## Projects
 
-| Project | Stack | Notes |
+| Project | Stack | Portfolio Description |
 |---|---|---|
-| Online School Intella | Next.js, TypeScript, Python, Docker | Educational platform for history exam preparation |
-| AERIX Education Avatar | TypeScript, Vite, Node.js | Real-time AI avatar education MVP |
-| AERIX Energy Pilot | Python, ML, frontend JS | Energy forecasting and optimization prototype |
-| LifeOS | Swift | Personal operating system / iOS-style project |
-| Telegram Automation Bot | Python, Telethon, FastAPI | Automation bot with packaging and tests |
-| Media Converter | Python | Desktop media conversion utility |
-| Marketplace Recruiter AI Copilot | n8n workflow | Automation case for recruiting operations |
-| Dating Photo Analyzer | React/Vite | Small browser-based AI-style analyzer UI |
-| EGE Materials Generator | Python | Educational PDF/card generation scripts |
+| [Online School Intella](projects/online-school-intella/PORTFOLIO_DESCRIPTION.md) | Next.js, TypeScript, Python, Docker | Full-stack educational platform for history exam preparation with auth, roles, uploads, migrations, CI, and deployment documentation. |
+| [AERIX Education Avatar](projects/aerix-education-avatar/PORTFOLIO_DESCRIPTION.md) | TypeScript, Vite, Node.js | Real-time AI education MVP focused on streaming, avatar animation, audio, latency budgets, and learning-assistant architecture. |
+| [AERIX Energy Pilot](projects/aerix-energy-pilot/PORTFOLIO_DESCRIPTION.md) | Python, ML, frontend JS | Energy intelligence prototype for forecasting, anomaly detection, optimization, AutoML, explainability, and monitoring. |
+| [LifeOS](projects/lifeos/PORTFOLIO_DESCRIPTION.md) | Swift | Native-style personal operating system concept with dashboards, reports, strategy views, statistics, and local persistence. |
+| [Telegram Automation Bot](projects/telegram-automation-bot/PORTFOLIO_DESCRIPTION.md) | Python, Telethon, FastAPI, pytest | Automation bot with secure setup, storage, GUI flow, web module, packaging templates, and tests. |
+| [Media Converter](projects/media-converter/PORTFOLIO_DESCRIPTION.md) | Python | Desktop utility for media conversion with GUI entry points, install script, packaging metadata, and dependency definitions. |
+| [Marketplace Recruiter AI Copilot](projects/marketplace-recruiter-ai-copilot/PORTFOLIO_DESCRIPTION.md) | n8n workflow | Recruiting automation workflow that structures candidate/job data, estimates AI cost, and prepares recruiter-facing outputs. |
+| [Dating Photo Analyzer](projects/dating-photo-analyzer/PORTFOLIO_DESCRIPTION.md) | React, Vite | Lightweight browser UI demo for analyzing dating profile photos. |
+| [EGE Materials Generator](projects/ege-materials-generator/PORTFOLIO_DESCRIPTION.md) | Python | Educational tooling for generating exam-preparation materials from source content. |
+| [Static Site 4](projects/static-site-4/PORTFOLIO_DESCRIPTION.md) | HTML, CSS, JavaScript | Small static web archive demo. |
+| [Static Site 9](projects/static-site-9/PORTFOLIO_DESCRIPTION.md) | HTML, CSS, JavaScript | Compact static web archive demo. |
+| [Static Site Pre:pri](projects/static-site-prepri/PORTFOLIO_DESCRIPTION.md) | HTML, CSS, JavaScript | Small static landing/static-page project. |
+| [Informatics Static Site](projects/informatics-static-site/PORTFOLIO_DESCRIPTION.md) | HTML | Lightweight educational static site snapshot. |
+| [Video Editing Course Site](projects/video-editing-course-site/PORTFOLIO_DESCRIPTION.md) | HTML, CSS, JavaScript | Older static educational/course website about video editing. |
+| [iOS Project 123](projects/ios-project-123/PORTFOLIO_DESCRIPTION.md) | Swift, Xcode | Small Swift/Xcode archive project with app, watch app, unit test, and UI test targets. |
+| [iOS Project 1234](projects/ios-project-1234/PORTFOLIO_DESCRIPTION.md) | Swift, Xcode | Small Swift/Xcode archive project with app, unit test, and UI test targets. |
 
 ## Live Portfolio Page
 
@@ -46,4 +53,3 @@ Before this repo was pushed, the collection was filtered for:
 - local Git histories from copied projects
 
 This repository is for portfolio review, not for storing production secrets or private datasets.
-
