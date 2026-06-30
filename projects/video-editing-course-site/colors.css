@@ -1,0 +1,28 @@
+body{
+    background-color: rgb(180, 88, 119);
+}
+button{
+    background-color: blue;
+    color: white;
+    border-radius: 30px;
+}
+input{
+    background-color: transparent;
+    color:  black;
+}
+.video_topics{
+    margin-top: 10px;
+    background-color: lightblue;
+    color: white;
+}
+#header{
+    border-bottom: 3px solid white;
+    background-color: darkblue;
+    padding: 30px;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    border-radius: 0px 0px 20px 20px;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+}

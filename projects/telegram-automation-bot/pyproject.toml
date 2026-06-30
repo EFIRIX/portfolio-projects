@@ -1,0 +1,24 @@
+[project]
+name = "telegram-automation-bot"
+version = "0.1.0"
+description = "Cross-platform Telegram automation bot with local web admin and remote owner controls."
+requires-python = ">=3.10"
+dependencies = [
+    "aiogram>=3.6,<4",
+    "aiohttp-socks>=0.9,<1",
+    "telethon>=1.36,<2",
+    "fastapi>=0.111,<1",
+    "uvicorn[standard]>=0.29,<1",
+    "python-dotenv>=1,<2",
+    "Pillow>=10,<12",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8,<9",
+    "pyinstaller>=6,<7",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

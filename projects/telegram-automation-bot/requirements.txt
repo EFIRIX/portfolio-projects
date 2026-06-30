@@ -1,0 +1,7 @@
+aiogram>=3.6,<4
+aiohttp-socks>=0.9,<1
+telethon>=1.36,<2
+fastapi>=0.111,<1
+uvicorn[standard]>=0.29,<1
+python-dotenv>=1,<2
+Pillow>=10,<12

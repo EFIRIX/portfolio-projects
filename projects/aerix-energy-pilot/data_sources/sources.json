@@ -1,0 +1,14 @@
+{
+  "datasets": [
+    {
+      "name": "pjm_energy",
+      "type": "kaggle",
+      "dataset": "robikscube/hourly-energy-consumption"
+    },
+    {
+      "name": "weather_data",
+      "type": "api",
+      "endpoint": "https://api.openweathermap.org"
+    }
+  ]
+}

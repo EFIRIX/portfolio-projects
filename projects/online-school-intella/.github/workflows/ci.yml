@@ -1,0 +1,128 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install backend dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r backend/requirements.txt
+
+      - name: Run backend tests
+        run: pytest backend/tests -q
+
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Lint frontend
+        working-directory: frontend
+        run: npm run lint
+
+      - name: Build frontend
+        working-directory: frontend
+        run: npm run build
+
+  docker-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Prepare env
+        run: cp .env.example .env
+
+      - name: Validate compose config
+        run: docker compose config
+
+      - name: Start containers
+        run: docker compose up -d --build
+
+      - name: Wait for health checks
+        run: |
+          set -e
+          for i in $(seq 1 60); do
+            POSTGRES_STATUS=$(docker inspect --format='{{if .State.Health}}{{.State.Health.Status}}{{else}}starting{{end}}' history_mvp_postgres 2>/dev/null || echo "starting")
+            BACKEND_STATUS=$(docker inspect --format='{{if .State.Health}}{{.State.Health.Status}}{{else}}starting{{end}}' history_mvp_backend 2>/dev/null || echo "starting")
+            FRONTEND_STATUS=$(docker inspect --format='{{if .State.Health}}{{.State.Health.Status}}{{else}}starting{{end}}' history_mvp_frontend 2>/dev/null || echo "starting")
+            echo "postgres=${POSTGRES_STATUS} backend=${BACKEND_STATUS} frontend=${FRONTEND_STATUS}"
+            if [ "${POSTGRES_STATUS}" = "healthy" ] && [ "${BACKEND_STATUS}" = "healthy" ] && [ "${FRONTEND_STATUS}" = "healthy" ]; then
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "Containers did not become healthy in time"
+          docker compose ps
+          exit 1
+
+      - name: API and UI smoke
+        run: |
+          set -e
+          curl -fsS http://localhost:8000/health
+          curl -fsS http://localhost:3000 >/dev/null
+
+          # guest should be redirected from a private route
+          GUEST_STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3000/dashboard)
+          if [ "${GUEST_STATUS}" -lt 300 ] || [ "${GUEST_STATUS}" -gt 399 ]; then
+            echo "Expected guest redirect from /dashboard, got ${GUEST_STATUS}"
+            exit 1
+          fi
+
+          # register user and extract auth cookie
+          REGISTER_RESPONSE=$(curl -is -X POST http://localhost:8000/api/v1/auth/register \
+            -H 'Content-Type: application/json' \
+            --data '{"email":"ci.user@example.com","password":"password123","full_name":"CI User"}')
+
+          TOKEN=$(echo "${REGISTER_RESPONSE}" | tr -d '\r' | awk -F'access_token=' '/^set-cookie:/ {split($2,a,";"); print a[1]; exit}')
+          if [ -z "${TOKEN}" ]; then
+            echo "access_token cookie not found in register response"
+            echo "${REGISTER_RESPONSE}"
+            exit 1
+          fi
+
+          AUTH_STATUS=$(curl -s -o /dev/null -w "%{http_code}" -H "Cookie: access_token=${TOKEN}" http://localhost:8000/api/v1/auth/me)
+          if [ "${AUTH_STATUS}" != "200" ]; then
+            echo "Expected 200 from /auth/me, got ${AUTH_STATUS}"
+            exit 1
+          fi
+
+          PRIVATE_STATUS=$(curl -s -o /dev/null -w "%{http_code}" -H "Cookie: access_token=${TOKEN}" http://localhost:3000/dashboard)
+          if [ "${PRIVATE_STATUS}" != "200" ]; then
+            echo "Expected 200 from private dashboard with cookie, got ${PRIVATE_STATUS}"
+            exit 1
+          fi
+
+      - name: Show logs on failure
+        if: failure()
+        run: docker compose logs --no-color
+
+      - name: Stop containers
+        if: always()
+        run: docker compose down -v

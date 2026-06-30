@@ -1,0 +1,322 @@
+{
+  "name": "Marketplace Recruiter AI Copilot",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "marketplace-recruiter-copilot",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "8b29d8c4-1d5b-40af-b9df-742ce3b34301",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -760,
+        0
+      ],
+      "webhookId": "marketplace-recruiter-copilot"
+    },
+    {
+      "parameters": {
+        "jsCode": "const source = $json.body ?? $json;\n\nconst asList = (value) => {\n  if (Array.isArray(value)) return value.map(String).map((item) => item.trim()).filter(Boolean);\n  if (value === undefined || value === null || value === '') return [];\n  return String(value)\n    .split(/[\\n,;]+/)\n    .map((item) => item.trim())\n    .filter(Boolean);\n};\n\nconst firstNonEmpty = (...values) => values.find((value) => value !== undefined && value !== null && String(value).trim() !== '') ?? '';\n\nreturn [\n  {\n    json: {\n      received_at: new Date().toISOString(),\n      job: {\n        title: firstNonEmpty(source.job_title, source.job?.title),\n        marketplace: firstNonEmpty(source.marketplace, source.job?.marketplace),\n        category: firstNonEmpty(source.category, source.job?.category),\n        must_have: asList(firstNonEmpty(source.must_have, source.job?.must_have)),\n        nice_to_have: asList(firstNonEmpty(source.nice_to_have, source.job?.nice_to_have)),\n      },\n      candidate: {\n        name: firstNonEmpty(source.candidate_name, source.candidate?.name),\n        resume: firstNonEmpty(source.candidate_resume, source.candidate?.resume),\n        salary_expectation: firstNonEmpty(source.salary_expectation, source.candidate?.salary_expectation),\n        contact: firstNonEmpty(source.contact, source.candidate?.contact),\n      },\n      raw_input: source,\n    },\n  },\n];"
+      },
+      "id": "25ca5e5f-c910-4f99-9eba-b6a673db0c11",
+      "name": "Normalize Input",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -520,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $json;\nconst job = data.job;\nconst candidate = data.candidate;\nconst resume = String(candidate.resume || '').toLowerCase();\nconst normalize = (value) => String(value || '').toLowerCase();\n\nconst keywordHit = (keyword) => {\n  const words = normalize(keyword)\n    .replace(/[^a-zа-я0-9+/#.\\s-]/gi, ' ')\n    .split(/\\s+/)\n    .filter((word) => word.length > 2);\n  if (!words.length) return false;\n  return words.some((word) => resume.includes(word));\n};\n\nconst mustHave = job.must_have || [];\nconst niceToHave = job.nice_to_have || [];\nconst matchedMust = mustHave.filter(keywordHit);\nconst missingMust = mustHave.filter((item) => !matchedMust.includes(item));\nconst matchedNice = niceToHave.filter(keywordHit);\n\nconst marketplace = normalize(job.marketplace);\nconst marketplaceTerms = [marketplace, 'wildberries', 'wb', 'ozon'].filter(Boolean);\nconst hasMarketplaceExperience = marketplaceTerms.some((term) => resume.includes(term));\nconst toolTerms = ['excel', 'google sheets', 'mpstats', 'marketguru', 'cabinet', 'кабинет', 'аналитик', 'аналитика', 'реклама', 'фулфилмент', 'seo', 'карточк'];\nconst matchedTools = toolTerms.filter((term) => resume.includes(term));\n\nconst mustScore = mustHave.length ? Math.round((matchedMust.length / mustHave.length) * 45) : 25;\nconst niceScore = niceToHave.length ? Math.round((matchedNice.length / niceToHave.length) * 15) : 5;\nconst marketplaceScore = hasMarketplaceExperience ? 20 : 0;\nconst toolsScore = Math.min(15, matchedTools.length * 3);\nconst salaryScore = candidate.salary_expectation ? 5 : 0;\nconst fitScore = Math.max(0, Math.min(100, mustScore + niceScore + marketplaceScore + toolsScore + salaryScore));\n\nlet verdict = 'needs_review';\nif (fitScore >= 80 && missingMust.length <= 1) verdict = 'strong_match';\nif (fitScore < 55 || missingMust.length >= Math.max(2, Math.ceil(mustHave.length / 2))) verdict = 'low_match';\n\nconst verdictText = {\n  strong_match: 'Сильный кандидат: можно быстро передавать рекрутеру на следующий этап.',\n  needs_review: 'Средний матч: стоит уточнить несколько деталей до интервью.',\n  low_match: 'Слабое совпадение: не хватает ключевых требований под вакансию.',\n}[verdict];\n\nconst strengths = [];\nif (matchedMust.length) strengths.push(`Совпал must-have: ${matchedMust.join(', ')}`);\nif (matchedNice.length) strengths.push(`Есть nice-to-have: ${matchedNice.join(', ')}`);\nif (hasMarketplaceExperience) strengths.push(`Есть релевантный опыт с ${job.marketplace || 'маркетплейсами'}.`);\nif (matchedTools.length) strengths.push(`В резюме найдены инструменты/темы: ${[...new Set(matchedTools)].slice(0, 6).join(', ')}.`);\nif (!strengths.length) strengths.push('В резюме есть общий коммерческий опыт, но мало явных сигналов под маркетплейсы.');\n\nconst risks = [];\nif (missingMust.length) risks.push(`Не подтверждены требования: ${missingMust.join(', ')}`);\nif (!hasMarketplaceExperience) risks.push('Не найден явный опыт WB/Ozon в тексте резюме.');\nif (!candidate.salary_expectation) risks.push('Не указаны зарплатные ожидания.');\nif (!risks.length) risks.push('Критичных рисков на первичном скоринге не найдено.');\n\nconst followUpQuestions = [\n  `С какими задачами на ${job.marketplace || 'маркетплейсах'} кандидат работал лично, а не через команду?`,\n  'Какие метрики кандидат улучшал: выручка, ДРР, конверсия, остатки, рейтинг карточек?',\n  'Какие инструменты аналитики и рекламы использовал в ежедневной работе?',\n];\nif (missingMust.length) followUpQuestions.unshift(`Попросить примеры по требованиям: ${missingMust.slice(0, 3).join(', ')}.`);\n\nconst recruiterSummary = `${candidate.name || 'Кандидат'} на позицию \"${job.title || 'без названия'}\": ${fitScore}/100. ${verdictText} Сильные стороны: ${strengths.join(' ')} Риски: ${risks.join(' ')}`;\nconst candidateMessage = `Привет, ${candidate.name || 'коллега'}! Меня заинтересовал твой опыт под вакансию \"${job.title || 'в e-commerce'}\" для ${job.marketplace || 'маркетплейсов'}. Хочу коротко уточнить пару деталей по задачам, инструментам и ожиданиям - удобно обсудить сегодня или завтра?`;\n\nreturn [\n  {\n    json: {\n      ...data,\n      ai_result: {\n        fit_score: fitScore,\n        verdict,\n        verdict_text: verdictText,\n        strengths,\n        risks,\n        recruiter_summary: recruiterSummary,\n        candidate_message: candidateMessage,\n        follow_up_questions: followUpQuestions,\n        matched_must_have: matchedMust,\n        missing_must_have: missingMust,\n        matched_nice_to_have: matchedNice,\n      },\n    },\n  },\n];"
+      },
+      "id": "9217e6d1-b91c-449c-ab03-073d3e40b4a4",
+      "name": "Mock AI Scoring",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -280,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $json;\nconst serializedInput = JSON.stringify(data.raw_input || {});\nconst serializedOutput = JSON.stringify(data.ai_result || {});\nconst estimatedInputTokens = Math.ceil(serializedInput.length / 4);\nconst estimatedOutputTokens = Math.ceil(serializedOutput.length / 4);\nconst estimatedTokens = estimatedInputTokens + estimatedOutputTokens;\nconst estimatedCostRub = Number(((estimatedTokens / 1000) * 0.18).toFixed(2));\n\nreturn [\n  {\n    json: {\n      timestamp: data.received_at,\n      candidate_name: data.candidate.name,\n      contact: data.candidate.contact,\n      job_title: data.job.title,\n      marketplace: data.job.marketplace,\n      category: data.job.category,\n      fit_score: data.ai_result.fit_score,\n      verdict: data.ai_result.verdict,\n      verdict_text: data.ai_result.verdict_text,\n      strengths: data.ai_result.strengths.join('\\n'),\n      risks: data.ai_result.risks.join('\\n'),\n      recruiter_summary: data.ai_result.recruiter_summary,\n      candidate_message: data.ai_result.candidate_message,\n      follow_up_questions: data.ai_result.follow_up_questions.join('\\n'),\n      estimated_input_tokens: estimatedInputTokens,\n      estimated_output_tokens: estimatedOutputTokens,\n      estimated_tokens: estimatedTokens,\n      estimated_cost_rub: estimatedCostRub,\n      status: data.ai_result.verdict === 'strong_match' ? 'ready_for_recruiter' : 'review_required',\n      debug: {\n        matched_must_have: data.ai_result.matched_must_have,\n        missing_must_have: data.ai_result.missing_must_have,\n        matched_nice_to_have: data.ai_result.matched_nice_to_have,\n      },\n    },\n  },\n];"
+      },
+      "id": "d159d648-c6bd-433e-862f-94fe7b162f4f",
+      "name": "Token Cost Log",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -40,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "REPLACE_WITH_GOOGLE_SHEET_ID",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Candidates",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "timestamp": "={{ $json.timestamp }}",
+            "candidate_name": "={{ $json.candidate_name }}",
+            "job_title": "={{ $json.job_title }}",
+            "marketplace": "={{ $json.marketplace }}",
+            "fit_score": "={{ $json.fit_score }}",
+            "verdict": "={{ $json.verdict }}",
+            "strengths": "={{ $json.strengths }}",
+            "risks": "={{ $json.risks }}",
+            "recruiter_summary": "={{ $json.recruiter_summary }}",
+            "candidate_message": "={{ $json.candidate_message }}",
+            "follow_up_questions": "={{ $json.follow_up_questions }}",
+            "estimated_tokens": "={{ $json.estimated_tokens }}",
+            "estimated_cost_rub": "={{ $json.estimated_cost_rub }}",
+            "status": "={{ $json.status }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "timestamp",
+              "displayName": "timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "candidate_name",
+              "displayName": "candidate_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "job_title",
+              "displayName": "job_title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "marketplace",
+              "displayName": "marketplace",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "fit_score",
+              "displayName": "fit_score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "verdict",
+              "displayName": "verdict",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "strengths",
+              "displayName": "strengths",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "risks",
+              "displayName": "risks",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "recruiter_summary",
+              "displayName": "recruiter_summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "candidate_message",
+              "displayName": "candidate_message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "follow_up_questions",
+              "displayName": "follow_up_questions",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "estimated_tokens",
+              "displayName": "estimated_tokens",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "estimated_cost_rub",
+              "displayName": "estimated_cost_rub",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "id": "fdfe1a04-ee0f-4302-ad48-6b78fc062bdf",
+      "name": "Google Sheets Append",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        220,
+        160
+      ],
+      "continueOnFail": true,
+      "notes": "Replace REPLACE_WITH_GOOGLE_SHEET_ID and add Google credentials before using this node in production."
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {}
+      },
+      "id": "d15ca240-919c-4789-a3db-4c1d2435bd2f",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        220,
+        -80
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "Normalize Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Input": {
+      "main": [
+        [
+          {
+            "node": "Mock AI Scoring",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mock AI Scoring": {
+      "main": [
+        [
+          {
+            "node": "Token Cost Log",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Token Cost Log": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Google Sheets Append",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "f5b3dcb7-1963-44cc-86c2-1afc2f120cdb",
+  "meta": {
+    "templateCredsSetupCompleted": false,
+    "instanceId": "portfolio-demo"
+  },
+  "id": "MarketplaceRecruiterAICopilot",
+  "tags": [
+    {
+      "createdAt": "2026-06-25T00:00:00.000Z",
+      "updatedAt": "2026-06-25T00:00:00.000Z",
+      "id": "portfolio",
+      "name": "portfolio"
+    }
+  ]
+}

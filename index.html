@@ -1,0 +1,544 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>EFIRIX Portfolio Projects</title>
+    <meta
+      name="description"
+      content="A sanitized portfolio collection of full-stack, AI, automation, mobile, and education projects by EFIRIX."
+    />
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #171717;
+        --muted: #626262;
+        --line: #dedbd2;
+        --panel: #ffffff;
+        --page: #f5f2ea;
+        --accent: #1d6f68;
+        --accent-2: #b73e3e;
+        --accent-3: #345995;
+        --chip: #ebe6db;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        color: var(--ink);
+        background: var(--page);
+      }
+
+      a {
+        color: inherit;
+      }
+
+      .shell {
+        width: min(1180px, calc(100% - 32px));
+        margin: 0 auto;
+      }
+
+      header {
+        border-bottom: 1px solid var(--line);
+        background: rgba(245, 242, 234, 0.92);
+        position: sticky;
+        top: 0;
+        z-index: 5;
+        backdrop-filter: blur(12px);
+      }
+
+      nav {
+        min-height: 64px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+      }
+
+      .brand {
+        font-weight: 760;
+        font-size: 18px;
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 16px;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .nav-links a {
+        text-decoration: none;
+      }
+
+      .hero {
+        min-height: 430px;
+        display: grid;
+        align-items: center;
+        padding: 68px 0 44px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .hero-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.7fr);
+        gap: 42px;
+        align-items: center;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(42px, 8vw, 92px);
+        line-height: 0.92;
+        letter-spacing: 0;
+        max-width: 860px;
+      }
+
+      .lede {
+        margin: 22px 0 0;
+        color: var(--muted);
+        font-size: 19px;
+        line-height: 1.55;
+        max-width: 720px;
+      }
+
+      .metrics {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .metric {
+        min-height: 110px;
+        border: 1px solid var(--line);
+        background: var(--panel);
+        border-radius: 8px;
+        padding: 18px;
+      }
+
+      .metric strong {
+        display: block;
+        font-size: 36px;
+        line-height: 1;
+      }
+
+      .metric span {
+        display: block;
+        margin-top: 10px;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.35;
+      }
+
+      section {
+        padding: 44px 0;
+      }
+
+      .section-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 24px;
+        align-items: end;
+        margin-bottom: 18px;
+      }
+
+      h2 {
+        margin: 0;
+        font-size: 28px;
+        letter-spacing: 0;
+      }
+
+      .section-head p {
+        margin: 0;
+        color: var(--muted);
+        max-width: 560px;
+        line-height: 1.5;
+      }
+
+      .projects {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .card {
+        min-height: 310px;
+        display: flex;
+        flex-direction: column;
+        border: 1px solid var(--line);
+        background: var(--panel);
+        border-radius: 8px;
+        overflow: hidden;
+      }
+
+      .preview {
+        min-height: 94px;
+        border-bottom: 1px solid var(--line);
+        display: grid;
+        align-content: end;
+        padding: 14px;
+        color: white;
+        background: linear-gradient(135deg, var(--accent), #253f3b);
+      }
+
+      .card:nth-child(3n + 2) .preview {
+        background: linear-gradient(135deg, var(--accent-2), #512d2d);
+      }
+
+      .card:nth-child(3n) .preview {
+        background: linear-gradient(135deg, var(--accent-3), #222d45);
+      }
+
+      .preview span {
+        width: fit-content;
+        border: 1px solid rgba(255, 255, 255, 0.42);
+        border-radius: 999px;
+        padding: 5px 9px;
+        font-size: 12px;
+      }
+
+      .card-body {
+        padding: 18px;
+        display: flex;
+        flex: 1;
+        flex-direction: column;
+      }
+
+      h3 {
+        margin: 0;
+        font-size: 18px;
+        line-height: 1.2;
+      }
+
+      .card p {
+        margin: 10px 0 0;
+        color: var(--muted);
+        line-height: 1.48;
+        font-size: 14px;
+      }
+
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 7px;
+        margin-top: 14px;
+      }
+
+      .chip {
+        background: var(--chip);
+        border-radius: 999px;
+        padding: 5px 8px;
+        font-size: 12px;
+        color: #34312b;
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 9px;
+        margin-top: auto;
+        padding-top: 18px;
+      }
+
+      .button {
+        min-height: 36px;
+        display: inline-flex;
+        align-items: center;
+        border: 1px solid var(--ink);
+        border-radius: 6px;
+        padding: 0 11px;
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 650;
+      }
+
+      .button.secondary {
+        border-color: var(--line);
+        color: var(--muted);
+      }
+
+      .safety {
+        border-top: 1px solid var(--line);
+        border-bottom: 1px solid var(--line);
+        background: #fffaf0;
+      }
+
+      .safety-grid {
+        display: grid;
+        grid-template-columns: 0.7fr 1fr;
+        gap: 32px;
+        align-items: start;
+      }
+
+      ul {
+        margin: 0;
+        padding-left: 18px;
+        color: var(--muted);
+        line-height: 1.7;
+      }
+
+      footer {
+        padding: 28px 0 42px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      @media (max-width: 900px) {
+        .hero-grid,
+        .safety-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .projects {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+
+      @media (max-width: 640px) {
+        .shell {
+          width: min(100% - 24px, 1180px);
+        }
+
+        nav {
+          align-items: start;
+          flex-direction: column;
+          padding: 14px 0;
+        }
+
+        .nav-links {
+          flex-wrap: wrap;
+        }
+
+        .hero {
+          padding-top: 44px;
+        }
+
+        .metrics,
+        .projects {
+          grid-template-columns: 1fr;
+        }
+
+        .section-head {
+          align-items: start;
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <nav class="shell">
+        <div class="brand">EFIRIX Portfolio</div>
+        <div class="nav-links">
+          <a href="#projects">Projects</a>
+          <a href="#safety">Safety</a>
+          <a href="PROJECTS.md">Inventory</a>
+          <a href="https://github.com/EFIRIX/portfolio-projects">GitHub</a>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="shell hero-grid">
+          <div>
+            <h1>Portfolio Projects</h1>
+            <p class="lede">
+              A curated collection of full-stack education products, AI prototypes, automation workflows,
+              Python desktop utilities, and Swift experiments. Published as sanitized review snapshots.
+            </p>
+          </div>
+          <div class="metrics" aria-label="Portfolio metrics">
+            <div class="metric"><strong>13</strong><span>projects and demos collected into one portfolio repository</span></div>
+            <div class="metric"><strong>5</strong><span>main domains: web, AI, automation, mobile, education</span></div>
+            <div class="metric"><strong>0</strong><span>local environment files or production secrets intentionally published</span></div>
+            <div class="metric"><strong>1</strong><span>single GitHub Pages entry point for review</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="projects">
+        <div class="shell">
+          <div class="section-head">
+            <h2>Featured Work</h2>
+            <p>Each project card links to the sanitized source snapshot. Browser-friendly demos also include a direct preview link.</p>
+          </div>
+
+          <div class="projects">
+            <article class="card">
+              <div class="preview"><span>Full-stack education</span></div>
+              <div class="card-body">
+                <h3>Online School Intella</h3>
+                <p>Educational platform for history exam preparation with separated frontend/backend, Docker setup, deployment notes, and auth/upload implementation docs.</p>
+                <div class="chips"><span class="chip">Next.js</span><span class="chip">TypeScript</span><span class="chip">Python</span><span class="chip">Docker</span></div>
+                <div class="actions"><a class="button" href="projects/online-school-intella/">Source</a></div>
+              </div>
+            </article>
+
+            <article class="card">
+              <div class="preview"><span>AI education MVP</span></div>
+              <div class="card-body">
+                <h3>AERIX Education Avatar</h3>
+                <p>Real-time avatar education MVP with TypeScript client/server structure and architecture, streaming, animation payload, and latency documentation.</p>
+                <div class="chips"><span class="chip">TypeScript</span><span class="chip">Vite</span><span class="chip">Node.js</span></div>
+                <div class="actions"><a class="button" href="projects/aerix-education-avatar/">Source</a></div>
+              </div>
+            </article>
+
+            <article class="card">
+              <div class="preview"><span>Energy intelligence</span></div>
+              <div class="card-body">
+                <h3>AERIX Energy Pilot</h3>
+                <p>Energy forecasting and optimization prototype with anomaly detection, explainability, AutoML, monitoring, scenarios, and tests.</p>
+                <div class="chips"><span class="chip">Python</span><span class="chip">ML</span><span class="chip">Optimization</span><span class="chip">Tests</span></div>
+                <div class="actions"><a class="button" href="projects/aerix-energy-pilot/">Source</a></div>
+              </div>
+            </article>
+
+            <article class="card">
+              <div class="preview"><span>Native app concept</span></div>
+              <div class="card-body">
+                <h3>LifeOS</h3>
+                <p>Swift project for a personal operating system concept, prepared as a compact portfolio-safe native app snapshot.</p>
+                <div class="chips"><span class="chip">Swift</span><span class="chip">App concept</span></div>
+                <div class="actions"><a class="button" href="projects/lifeos/">Source</a></div>
+              </div>
+            </article>
+
+            <article class="card">
+              <div class="preview"><span>Telegram automation</span></div>
+              <div class="card-body">
+                <h3>Telegram Automation Bot</h3>
+                <p>Python automation bot with secure setup flow, storage layer, web server module, packaging templates, and pytest coverage.</p>
+                <div class="chips"><span class="chip">Python</span><span class="chip">Telethon</span><span class="chip">FastAPI</span><span class="chip">pytest</span></div>
+                <div class="actions"><a class="button" href="projects/telegram-automation-bot/">Source</a></div>
+              </div>
+            </article>
+
+            <article class="card">
+              <div class="preview"><span>Desktop utility</span></div>
+              <div class="card-body">
+                <h3>Media Converter</h3>
+                <p>Python desktop media converter with GUI entry points, installer script, and packaging metadata, published without binaries.</p>
+                <div class="chips"><span class="chip">Python</span><span class="chip">Desktop</span></div>
+                <div class="actions"><a class="button" href="projects/media-converter/">Source</a></div>
+              </div>
+            </article>
+
+            <article class="card">
+              <div class="preview"><span>Workflow automation</span></div>
+              <div class="card-body">
+                <h3>Marketplace Recruiter AI Copilot</h3>
+                <p>n8n automation case for recruiting operations, including workflow JSON and portfolio case notes.</p>
+                <div class="chips"><span class="chip">n8n</span><span class="chip">Automation</span><span class="chip">Workflow</span></div>
+                <div class="actions"><a class="button" href="projects/marketplace-recruiter-ai-copilot/">Source</a></div>
+              </div>
+            </article>
+
+            <article class="card">
+              <div class="preview"><span>Frontend demo</span></div>
+              <div class="card-body">
+                <h3>Dating Photo Analyzer</h3>
+                <p>Small React/Vite browser interface demo collected as a lightweight frontend portfolio piece.</p>
+                <div class="chips"><span class="chip">React</span><span class="chip">Vite</span><span class="chip">UI</span></div>
+                <div class="actions"><a class="button" href="projects/dating-photo-analyzer/">Source</a><a class="button secondary" href="projects/dating-photo-analyzer/dist/">Preview</a></div>
+              </div>
+            </article>
+
+            <article class="card">
+              <div class="preview"><span>Education tooling</span></div>
+              <div class="card-body">
+                <h3>EGE Materials Generator</h3>
+                <p>Python scripts for generating educational materials. Generated PDFs, DOCX files, previews, and caches were excluded.</p>
+                <div class="chips"><span class="chip">Python</span><span class="chip">Education</span></div>
+                <div class="actions"><a class="button" href="projects/ege-materials-generator/">Source</a></div>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="shell">
+          <div class="section-head">
+            <h2>Archive Demos</h2>
+            <p>Smaller static and mobile experiments kept as supporting material after basic cleanup.</p>
+          </div>
+          <div class="projects">
+            <article class="card">
+              <div class="preview"><span>Static page</span></div>
+              <div class="card-body">
+                <h3>Static Site 4</h3>
+                <p>Compact static web page.</p>
+                <div class="actions"><a class="button" href="projects/static-site-4/">Preview</a></div>
+              </div>
+            </article>
+            <article class="card">
+              <div class="preview"><span>Static page</span></div>
+              <div class="card-body">
+                <h3>Static Site 9</h3>
+                <p>Compact static web page.</p>
+                <div class="actions"><a class="button" href="projects/static-site-9/">Preview</a></div>
+              </div>
+            </article>
+            <article class="card">
+              <div class="preview"><span>Static page</span></div>
+              <div class="card-body">
+                <h3>Static Site Pre:pri</h3>
+                <p>Compact static web page.</p>
+                <div class="actions"><a class="button" href="projects/static-site-prepri/">Preview</a></div>
+              </div>
+            </article>
+            <article class="card">
+              <div class="preview"><span>School site</span></div>
+              <div class="card-body">
+                <h3>Informatics Static Site</h3>
+                <p>Small static site snapshot with large media excluded.</p>
+                <div class="actions"><a class="button" href="projects/informatics-static-site/">Preview</a></div>
+              </div>
+            </article>
+            <article class="card">
+              <div class="preview"><span>Swift archive</span></div>
+              <div class="card-body">
+                <h3>iOS Project 123</h3>
+                <p>Small Swift/Xcode archive project staged through Downloads before publication.</p>
+                <div class="actions"><a class="button" href="projects/ios-project-123/">Source</a></div>
+              </div>
+            </article>
+            <article class="card">
+              <div class="preview"><span>Swift archive</span></div>
+              <div class="card-body">
+                <h3>iOS Project 1234</h3>
+                <p>Small Swift/Xcode archive project staged through Downloads before publication.</p>
+                <div class="actions"><a class="button" href="projects/ios-project-1234/">Source</a></div>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="safety" class="safety">
+        <div class="shell safety-grid">
+          <div>
+            <h2>Sanitized For Review</h2>
+            <p class="lede">This repository is intentionally a portfolio snapshot, not a production backup.</p>
+          </div>
+          <ul>
+            <li>Local `.env` files and production secrets are excluded.</li>
+            <li>Dependencies, build outputs, binaries, logs, trained models, and heavy generated documents are excluded.</li>
+            <li>Private data and runtime datasets are excluded from ML and automation projects.</li>
+            <li>Some projects are case-study snapshots because they require private services or local data to run fully.</li>
+          </ul>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="shell">EFIRIX Portfolio Projects. Public review snapshots prepared for GitHub Pages.</div>
+    </footer>
+  </body>
+</html>

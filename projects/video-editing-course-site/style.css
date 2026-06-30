@@ -1,0 +1,113 @@
+body{
+    margin: 0px;
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif
+}
+p{
+    margin-block: 3px;
+}
+button{
+    cursor: pointer;
+}
+#filled{
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+#titles{
+    display: flex;
+    height: calc(100vh - 100px);
+    padding: 5px;
+    flex-direction: column;
+    overflow-y: scroll;
+    overflow-x: scroll;
+}
+#finish{
+    margin-left: 20px;
+    border: none;
+}
+.video_topics{
+    width: 100%;
+    height: 50px;
+    border: 3px solid white;
+    border-radius: 10px;
+    font-size: 30px;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: space-around;
+}
+.video_topics p{
+    width: calc(50% - 30px);
+}
+.add_video{
+    width: 130px;
+    height: 25px;
+    border: 2px dotted white;
+}
+.title_field{
+    width: fit-content;
+    min-width: 150px;
+    height: 40px;
+    border: 2px solid rgb(0,0,0, 0.5);
+    border-radius: 30px;
+    text-align: center;
+    padding: 5px;
+    /* overflow-x:hidden; */
+}
+.not_filled{
+    border: 2px dotted rgb(255,255,255, 0.5);
+    height: 30px
+}
+
+.show_button{
+    background-image: url('triangle.svg');
+    background-color: blueviolet;
+    width: 30px;
+    margin-top: 7.5px;
+    rotate: -90deg;
+    height: 25px;
+    border: none;
+    background-size: cover;
+}
+.video_body{
+    width: 100%;
+    overflow-x: scroll;
+}
+.delete{
+    margin-left: calc(50% - 110px);
+    background-image: url('Krestiksvgpng.ru_.svg');
+    width: 40px;
+    height: 40px;
+    background-size: cover;
+    border: none;
+    background-color: transparent;
+}
+
+@keyframes rotate {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(90deg);
+    }
+  }
+
+@keyframes rotate_back {
+    0% {
+      transform: rotate(90deg);
+    }
+    100% {
+      transform: rotate(0deg);
+    }
+  }
+video{
+    height: 300px;
+    padding-left: 30px;
+    padding-right: 30px;
+}
+.video_body{
+    display: flex;
+    flex-direction: row;
+}
+.fin{
+    margin-left: calc(50% - 10px);
+}
