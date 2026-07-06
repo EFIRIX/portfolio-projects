@@ -25,6 +25,8 @@ Important: public GitHub repositories can always be cloned or downloaded. For th
 | [Video Editing Course Site](projects/video-editing-course-site/PORTFOLIO_DESCRIPTION.md) | HTML, CSS, JavaScript | Older static educational/course website about video editing. |
 | [iOS Project 123](projects/ios-project-123/PORTFOLIO_DESCRIPTION.md) | Swift, Xcode | Small Swift/Xcode archive project with app, watch app, unit test, and UI test targets. |
 | [iOS Project 1234](projects/ios-project-1234/PORTFOLIO_DESCRIPTION.md) | Swift, Xcode | Small Swift/Xcode archive project with app, unit test, and UI test targets. |
+| [Finance Copilot](projects/finance-copilot/PORTFOLIO_DESCRIPTION.md) | Python, aiogram, SQLite | Telegram bot for personal finance tracking with two-stage categorization (rules + LLM fallback), bank CSV parsing, and weekly reports. |
+| [Marketplace Copilot](projects/marketplace-copilot/PORTFOLIO_DESCRIPTION.md) | Next.js, TypeScript, GigaChat/YandexGPT | Web tool for generating marketplace product cards (Wildberries/Ozon) with platform-specific character limits, SEO keywords, and review-response drafts. |
 
 ## Live Portfolio Page
 

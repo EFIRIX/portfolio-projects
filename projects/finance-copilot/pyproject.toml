@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "finance-copilot"
+version = "0.1.0"
+description = "Telegram-бот для автоматической категоризации личных трат"
+requires-python = ">=3.9"
+dependencies = [
+    "aiogram>=3.4,<4.0",
+    "pandas>=2.0",
+    "PyYAML>=6.0",
+    "python-dotenv>=1.0",
+    "requests>=2.31",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+
+[project.scripts]
+finance-copilot = "finance_copilot.bot.main:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]

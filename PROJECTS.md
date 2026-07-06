@@ -99,6 +99,24 @@
 - Portfolio value: educational content generation scripts.
 - Removed for publication: generated PDFs/DOCX, cache, previews.
 
+### Finance Copilot
+
+- Path: `projects/finance-copilot`
+- Stack: Python, aiogram 3.x, pandas, SQLite, YandexGPT/GigaChat
+- Description: Telegram bot for personal finance tracking with two-stage categorization (deterministic rules + LLM fallback), multi-bank CSV parsing, weekly reports, and sensitive data protection.
+- Details: `projects/finance-copilot/PORTFOLIO_DESCRIPTION.md`
+- Portfolio value: two-stage categorization pipeline, secure data handling, pluggable LLM providers, configurable bank formats.
+- Removed for publication: `.env`, virtual environment, `__pycache__`, local git history.
+
+### Marketplace Copilot
+
+- Path: `projects/marketplace-copilot`
+- Stack: Next.js 14 (App Router), TypeScript, GigaChat/YandexGPT
+- Description: web tool for generating marketplace product cards with platform-specific character limits (Wildberries/Ozon), SEO keyword drafts, and review-response templates.
+- Details: `projects/marketplace-copilot/PORTFOLIO_DESCRIPTION.md`
+- Portfolio value: config-as-business-rules architecture, length validation with LLM shrink loop, abstract LLM provider interface.
+- Removed for publication: `.env`, `node_modules/`, build artifacts.
+
 ## Static / Archive Demos
 
 - `projects/static-site-4`
